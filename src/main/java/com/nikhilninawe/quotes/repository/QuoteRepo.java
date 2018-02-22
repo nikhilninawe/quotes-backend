@@ -4,5 +4,6 @@ import com.nikhilninawe.quotes.model.Quote;
 import org.springframework.data.repository.CrudRepository;
 
 public interface QuoteRepo extends CrudRepository<Quote, Long> {
-
+    Quote findByQuoteUrl(String url);
+    Quote findByQuote(String q);
 }

@@ -1,0 +1,38 @@
+{
+  "name": "quotes-backend",
+  "version": "1.0.0",
+  "description": "UI for uploading and auditing image quotes",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikhilninawe/quotes-backend.git"
+  },
+  "keywords": [
+    "ui",
+    "react",
+    "spring"
+  ],
+  "author": "nikhil",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nikhilninawe/quotes-backend/issues"
+  },
+  "homepage": "https://github.com/nikhilninawe/quotes-backend#readme",
+  "dependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.1",
+    "babel-preset-es2015": "^6.24.1",
+    "gulp-babel": "^7.0.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "rest": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel-preset-react": "^6.24.1",
+    "webpack": "^2.1.0-beta.21"
+  }
+}
