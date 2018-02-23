@@ -10,8 +10,10 @@ import com.nikhilninawe.quotes.repository.QuoteRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
@@ -80,6 +82,15 @@ public class QuoteController {
                                  @PathVariable boolean approved,
                                  @PathVariable boolean random){
         Pageable pageable = new PageRequest(0, limit);
-        return repository.findByLanguageAndApprovedAndType(language, approved, "image", pageable);
+        return repository.findByLanguageAndApproved(language, approved, pageable);
+    }
+
+    @RequestMapping(value = "/quote/approve/{id}", method = RequestMethod.POST)
+    public void approveQuote(@PathVariable Long id) {
+        Quote q = repository.findOne(id);
+        if(Objects.nonNull(q)){
+            q.setApproved(true);
+            repository.save(q);
+        }
     }
 }
