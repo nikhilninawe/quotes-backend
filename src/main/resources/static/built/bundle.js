@@ -18249,9 +18249,17 @@ isValidElement:K,version:"16.2.0",__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_F
 "use strict";
 'use strict';
 
-// tag::vars[]
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(14);
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -18259,106 +18267,87 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var React = __webpack_require__(4);
-var ReactDOM = __webpack_require__(14);
 // const client = require('./client');
 // end::vars[]
 
 // tag::app[]
-
-var App = function (_React$Component) {
-  _inherits(App, _React$Component);
+var App = function (_Component) {
+  _inherits(App, _Component);
 
   function App(props) {
     _classCallCheck(this, App);
 
     var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-    _this.state = { employees: [] };
+    _this.state = { quotes: [] };
     return _this;
   }
 
   _createClass(App, [{
     key: 'componentDidMount',
-    value: function componentDidMount() {}
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      fetch('http://localhost:8090/quote/en/10/false/false').then(function (result) {
+        return result.json();
+      }).then(function (items) {
+        _this2.setState({ quotes: items });
+      }).catch(function (reason) {
+        console.log(reason);
+      });
+    }
   }, {
     key: 'render',
     value: function render() {
-      return React.createElement(
-        'table',
-        null,
-        React.createElement(
-          'tbody',
-          null,
-          React.createElement(
-            'tr',
-            null,
-            React.createElement(
-              'th',
-              null,
-              'First Name'
-            ),
-            React.createElement(
-              'th',
-              null,
-              'Last Name'
-            ),
-            React.createElement(
-              'th',
-              null,
-              'Description'
-            )
-          )
-        )
-      );
+      return _react2.default.createElement(QuoteList, { quotes: this.state.quotes });
     }
   }]);
 
   return App;
-}(React.Component);
+}(_react.Component);
 // end::app[]
 
 // tag::employee-list[]
 
 
-var EmployeeList = function (_React$Component2) {
-  _inherits(EmployeeList, _React$Component2);
+var QuoteList = function (_Component2) {
+  _inherits(QuoteList, _Component2);
 
-  function EmployeeList() {
-    _classCallCheck(this, EmployeeList);
+  function QuoteList() {
+    _classCallCheck(this, QuoteList);
 
-    return _possibleConstructorReturn(this, (EmployeeList.__proto__ || Object.getPrototypeOf(EmployeeList)).apply(this, arguments));
+    return _possibleConstructorReturn(this, (QuoteList.__proto__ || Object.getPrototypeOf(QuoteList)).apply(this, arguments));
   }
 
-  _createClass(EmployeeList, [{
+  _createClass(QuoteList, [{
     key: 'render',
     value: function render() {
-      var employees = this.props.employees.map(function (employee) {
-        return React.createElement(Employee, { key: employee._links.self.href, employee: employee });
+      var employees = this.props.quotes.map(function (q) {
+        return _react2.default.createElement(Quote, { key: q.id, quote: q });
       });
-      return React.createElement(
+      return _react2.default.createElement(
         'table',
         null,
-        React.createElement(
+        _react2.default.createElement(
           'tbody',
           null,
-          React.createElement(
+          _react2.default.createElement(
             'tr',
             null,
-            React.createElement(
+            _react2.default.createElement(
               'th',
               null,
-              'First Name'
+              'Id'
             ),
-            React.createElement(
+            _react2.default.createElement(
               'th',
               null,
-              'Last Name'
+              'Type'
             ),
-            React.createElement(
+            _react2.default.createElement(
               'th',
               null,
-              'Description'
+              'Language'
             )
           ),
           employees
@@ -18367,55 +18356,69 @@ var EmployeeList = function (_React$Component2) {
     }
   }]);
 
-  return EmployeeList;
-}(React.Component);
+  return QuoteList;
+}(_react.Component);
 // end::employee-list[]
 
 // tag::employee[]
 
 
-var Employee = function (_React$Component3) {
-  _inherits(Employee, _React$Component3);
+var Quote = function (_Component3) {
+  _inherits(Quote, _Component3);
 
-  function Employee() {
-    _classCallCheck(this, Employee);
+  function Quote() {
+    _classCallCheck(this, Quote);
 
-    return _possibleConstructorReturn(this, (Employee.__proto__ || Object.getPrototypeOf(Employee)).apply(this, arguments));
+    return _possibleConstructorReturn(this, (Quote.__proto__ || Object.getPrototypeOf(Quote)).apply(this, arguments));
   }
 
-  _createClass(Employee, [{
+  _createClass(Quote, [{
+    key: 'handleClick',
+    value: function handleClick() {
+      console.log('The link was clicked.' + this.props.key);
+    }
+  }, {
     key: 'render',
     value: function render() {
-      return React.createElement(
+      return _react2.default.createElement(
         'tr',
         null,
-        React.createElement(
+        _react2.default.createElement(
           'td',
           null,
-          this.props.employee.firstName
+          this.props.quote.id
         ),
-        React.createElement(
+        _react2.default.createElement(
           'td',
           null,
-          this.props.employee.lastName
+          this.props.quote.type
         ),
-        React.createElement(
+        _react2.default.createElement(
           'td',
           null,
-          this.props.employee.description
+          _react2.default.createElement('img', { src: this.props.quote.quoteUrl, height: 150, width: 200 })
+        ),
+        _react2.default.createElement(
+          'td',
+          null,
+          _react2.default.createElement(
+            'button',
+            { onClick: this.handleClick.bind(this) },
+            ' Approve '
+          )
         )
       );
     }
   }]);
 
-  return Employee;
-}(React.Component);
+  return Quote;
+}(_react.Component);
 // end::employee[]
 
 // tag::render[]
 
 
-ReactDOM.render(React.createElement(App, null), document.getElementById('react'));
+_reactDom2.default.render(_react2.default.createElement(App, null), document.getElementById('react'));
 
 /***/ }
 /******/ ]);

@@ -8,7 +8,9 @@ import com.nikhilninawe.quotes.model.Quote;
 import com.nikhilninawe.quotes.model.QuoteWrapper;
 import com.nikhilninawe.quotes.repository.QuoteRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -70,5 +72,14 @@ public class QuoteController {
 
             }
         }
+    }
+
+    @RequestMapping(value = "/quote/{language}/{limit}/{approved}/{random}")
+    public List<Quote> getQuotes(@PathVariable Language language,
+                                 @PathVariable int limit,
+                                 @PathVariable boolean approved,
+                                 @PathVariable boolean random){
+        Pageable pageable = new PageRequest(0, limit);
+        return repository.findByLanguageAndApprovedAndType(language, approved, "image", pageable);
     }
 }
