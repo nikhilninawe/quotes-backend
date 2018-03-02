@@ -1,6 +1,8 @@
 package com.nikhilninawe.quotes.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.nikhilninawe.quotes.constants.Language;
@@ -11,14 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpRequest;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.PrintStream;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,15 +88,36 @@ public class QuoteController {
                                  @PathVariable boolean approved,
                                  @PathVariable boolean random){
         Pageable pageable = new PageRequest(0, limit);
-        return repository.findByLanguageAndApproved(language, approved, pageable);
+        return repository.findByLanguageAndApprovedIsNull(language, pageable);
     }
 
-    @RequestMapping(value = "/quote/approve/{id}", method = RequestMethod.POST)
-    public void approveQuote(@PathVariable Long id) {
+    @RequestMapping(value = "/quote/{approve}/{id}", method = RequestMethod.POST)
+    public void approveQuote(@PathVariable Long id,
+                             @PathVariable Boolean approve) {
         Quote q = repository.findOne(id);
         if(Objects.nonNull(q)){
-            q.setApproved(true);
+            q.setApproved(approve);
             repository.save(q);
+        }
+    }
+
+    @RequestMapping(value = "/writeToFile")
+    public void writeToFile() throws Exception{
+        for(String lang : quoteMap.keySet()){
+            Language l = Language.valueOf(lang);
+            List<Quote> ls = repository.findByLanguageAndApprovedTrue(l);
+            if(CollectionUtils.isEmpty(ls)){
+                continue;
+            }
+            String fileName = quoteMap.get(lang);
+            QuoteWrapper wrapper = new QuoteWrapper();
+            wrapper.setQuotes(ls);
+            Gson gson = new GsonBuilder()
+                    .disableHtmlEscaping()
+                    .create();
+            try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
+                out.print(gson.toJson(wrapper));
+            }
         }
     }
 }

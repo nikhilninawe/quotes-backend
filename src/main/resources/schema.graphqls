@@ -1,0 +1,17 @@
+type Quote @model {
+  author: String!
+  id: ID! @isUnique
+  imageUrl: String!
+  language: String!
+  quoteId: Int
+  text: String!
+}
+
+type Query {
+  allQuotes: [Quote]
+}
+
+schema {
+  query: Query
+}
+

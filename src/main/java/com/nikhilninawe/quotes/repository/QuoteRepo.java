@@ -11,6 +11,7 @@ public interface QuoteRepo extends CrudRepository<Quote, Long> {
     Quote findByQuoteUrl(String url);
     Quote findByQuote(String q);
     List<Quote> findByLanguageAndApproved(Language language, boolean approved, Pageable pageable);
+    List<Quote> findByLanguageAndApprovedIsNull(Language language, Pageable pageable);
+    List<Quote> findByLanguageAndApprovedTrue(Language language);
     List<Quote> findByLanguageAndApprovedAndType(Language language, boolean approved, String type, Pageable pageable);
-
 }

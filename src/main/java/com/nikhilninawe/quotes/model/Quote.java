@@ -2,6 +2,7 @@ package com.nikhilninawe.quotes.model;
 
 import com.nikhilninawe.quotes.constants.Language;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -19,7 +20,9 @@ public class Quote {
     private String author;
     @Enumerated(EnumType.STRING)
     private Language language;
-    private boolean approved;
+
+    @Column(nullable = true)
+    private Boolean approved;
     private String type = "text";
 
     public Long getId() {
@@ -62,11 +65,11 @@ public class Quote {
         this.language = language;
     }
 
-    public boolean isApproved() {
+    public Boolean isApproved() {
         return approved;
     }
 
-    public void setApproved(boolean approved) {
+    public void setApproved(Boolean approved) {
         this.approved = approved;
     }
 

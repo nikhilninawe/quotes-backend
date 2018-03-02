@@ -4,10 +4,6 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import Dropdown from 'react-dropdown'
 
-// const client = require('./client');
-// end::vars[]
-
-// tag::app[]
 class App extends Component {
 
   constructor(props) {
@@ -16,7 +12,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetch(`http://localhost:8090/quote/en/10/false/false`)
+    fetch(`/quote/en/10/false/false`)
       .then(result => result.json())
       .then(items => {
         this.setState({ quotes: items})
@@ -25,14 +21,27 @@ class App extends Component {
   }
 
   _onSelect(val){
-    fetch(`http://localhost:8090/quote/${val.value}/10/false/false`)
+    fetch(`/quote/${val.value}/10/false/false`)
       .then(result => result.json())
       .then(items => {
-        this.setState({ quotes: items})
+        this.setState({ quotes: items, selected: val.value})
       })
       .catch(reason => {console.log(reason)});
-    this.setState({ selected: val.value})
   }
+
+  _onSelect2(){
+    fetch(`/quote/${this.state.selected}/10/false/false`)
+      .then(result => result.json())
+      .then(items => {
+        this.setState({ quotes: items })
+      })
+      .catch(reason => {console.log(reason)});
+  }
+
+  handleClick(){
+    this._onSelect({ value: this.state.selected });
+  }
+
 
   render() {
     const options = [
@@ -42,8 +51,10 @@ class App extends Component {
 
     return (
       <div>
+        <button onClick={this.handleClick.bind(this)}> Refresh </button>
         <Dropdown options={options} onChange={this._onSelect.bind(this)} value={defaultOption} placeholder="Select an option" />
-        <QuoteList quotes={this.state.quotes} />
+        <QuoteList quotes={this.state.quotes} handle={this._onSelect2.bind(this)} />
+        <button onClick={this.handleClick.bind(this)}> Refresh </button>
       </div>
     )
   }
@@ -52,7 +63,7 @@ class App extends Component {
 class QuoteList extends Component{
   render() {
     var employees = this.props.quotes.map(q =>
-      <Quote key={q.id} quote={q}/>
+      <Quote key={q.id} quote={q} handle={this.props.handle}/>
   );
     return (
       <table>
@@ -77,7 +88,16 @@ class Quote extends Component{
   }
 
   handleClick() {
-    fetch(`http://localhost:8090/quote/approve/${this.props.quote.id}`, {
+    this.props.handle();
+    fetch(`/quote/true/${this.props.quote.id}`, {
+      method: 'POST'
+    });
+    this.setState({approve: true})
+  };
+
+  reject() {
+    this.props.handle();
+    fetch(`/quote/false/${this.props.quote.id}`, {
       method: 'POST'
     });
     this.setState({approve: true})
@@ -96,8 +116,9 @@ class Quote extends Component{
       <td>{this.props.quote.id}</td>
       <td>{this.props.quote.type}</td>
       <td>{image}</td>
-        <td><button onClick={this.handleClick.bind(this)}> {this.state.approve ? 'Done':'Approve?'} </button></td>
-    </tr>
+        <td><button onClick={this.handleClick.bind(this)}> {this.state.approve ? 'Done':'Approve'} </button></td>
+        <td><button onClick={this.reject.bind(this)}> {this.state.approve ? 'Done':'Reject'} </button></td>
+      </tr>
   )
   }
 }

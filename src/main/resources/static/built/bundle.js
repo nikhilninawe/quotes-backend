@@ -18558,10 +18558,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// const client = require('./client');
-// end::vars[]
-
-// tag::app[]
 var App = function (_Component) {
   _inherits(App, _Component);
 
@@ -18579,7 +18575,7 @@ var App = function (_Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      fetch('http://localhost:8090/quote/en/10/false/false').then(function (result) {
+      fetch('/quote/en/10/false/false').then(function (result) {
         return result.json();
       }).then(function (items) {
         _this2.setState({ quotes: items });
@@ -18592,14 +18588,31 @@ var App = function (_Component) {
     value: function _onSelect(val) {
       var _this3 = this;
 
-      fetch('http://localhost:8090/quote/' + val.value + '/10/false/false').then(function (result) {
+      fetch('/quote/' + val.value + '/10/false/false').then(function (result) {
         return result.json();
       }).then(function (items) {
-        _this3.setState({ quotes: items });
+        _this3.setState({ quotes: items, selected: val.value });
       }).catch(function (reason) {
         console.log(reason);
       });
-      this.setState({ selected: val.value });
+    }
+  }, {
+    key: '_onSelect2',
+    value: function _onSelect2() {
+      var _this4 = this;
+
+      fetch('/quote/' + this.state.selected + '/10/false/false').then(function (result) {
+        return result.json();
+      }).then(function (items) {
+        _this4.setState({ quotes: items });
+      }).catch(function (reason) {
+        console.log(reason);
+      });
+    }
+  }, {
+    key: 'handleClick',
+    value: function handleClick() {
+      this._onSelect({ value: this.state.selected });
     }
   }, {
     key: 'render',
@@ -18610,8 +18623,18 @@ var App = function (_Component) {
       return _react2.default.createElement(
         'div',
         null,
+        _react2.default.createElement(
+          'button',
+          { onClick: this.handleClick.bind(this) },
+          ' Refresh '
+        ),
         _react2.default.createElement(_reactDropdown2.default, { options: options, onChange: this._onSelect.bind(this), value: defaultOption, placeholder: 'Select an option' }),
-        _react2.default.createElement(QuoteList, { quotes: this.state.quotes })
+        _react2.default.createElement(QuoteList, { quotes: this.state.quotes, handle: this._onSelect2.bind(this) }),
+        _react2.default.createElement(
+          'button',
+          { onClick: this.handleClick.bind(this) },
+          ' Refresh '
+        )
       );
     }
   }]);
@@ -18631,8 +18654,10 @@ var QuoteList = function (_Component2) {
   _createClass(QuoteList, [{
     key: 'render',
     value: function render() {
+      var _this6 = this;
+
       var employees = this.props.quotes.map(function (q) {
-        return _react2.default.createElement(Quote, { key: q.id, quote: q });
+        return _react2.default.createElement(Quote, { key: q.id, quote: q, handle: _this6.props.handle });
       });
       return _react2.default.createElement(
         'table',
@@ -18674,16 +18699,26 @@ var Quote = function (_Component3) {
   function Quote(props) {
     _classCallCheck(this, Quote);
 
-    var _this5 = _possibleConstructorReturn(this, (Quote.__proto__ || Object.getPrototypeOf(Quote)).call(this, props));
+    var _this7 = _possibleConstructorReturn(this, (Quote.__proto__ || Object.getPrototypeOf(Quote)).call(this, props));
 
-    _this5.state = { approve: false };
-    return _this5;
+    _this7.state = { approve: false };
+    return _this7;
   }
 
   _createClass(Quote, [{
     key: 'handleClick',
     value: function handleClick() {
-      fetch('http://localhost:8090/quote/approve/' + this.props.quote.id, {
+      this.props.handle();
+      fetch('/quote/true/' + this.props.quote.id, {
+        method: 'POST'
+      });
+      this.setState({ approve: true });
+    }
+  }, {
+    key: 'reject',
+    value: function reject() {
+      this.props.handle();
+      fetch('/quote/false/' + this.props.quote.id, {
         method: 'POST'
       });
       this.setState({ approve: true });
@@ -18723,7 +18758,18 @@ var Quote = function (_Component3) {
             'button',
             { onClick: this.handleClick.bind(this) },
             ' ',
-            this.state.approve ? 'Done' : 'Approve?',
+            this.state.approve ? 'Done' : 'Approve',
+            ' '
+          )
+        ),
+        _react2.default.createElement(
+          'td',
+          null,
+          _react2.default.createElement(
+            'button',
+            { onClick: this.reject.bind(this) },
+            ' ',
+            this.state.approve ? 'Done' : 'Reject',
             ' '
           )
         )
